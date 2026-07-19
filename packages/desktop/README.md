@@ -1,6 +1,6 @@
-# OpenCode Desktop
+# Viqo Desktop
 
-The OpenCode Desktop app, built with Electron.
+The Viqo Desktop app, built with Electron.
 
 ## Development
 

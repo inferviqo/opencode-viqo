@@ -40,8 +40,8 @@ export function DialogModel(props: { providerID?: string }) {
             title: model.name ?? item.modelID,
             description: provider.name,
             category,
-            disabled: provider.id === "opencode" && model.id.includes("-nano"),
-            footer: model.cost?.input === 0 && provider.id === "opencode" ? "Free" : undefined,
+            disabled: provider.id === "viqo" && model.id.includes("-nano"),
+            footer: model.cost?.input === 0 && provider.id === "viqo" ? "Free" : undefined,
             onSelect: () => {
               onSelect(provider.id, model.id)
             },
@@ -61,7 +61,7 @@ export function DialogModel(props: { providerID?: string }) {
     const providerOptions = pipe(
       sync.data.provider,
       sortBy(
-        (provider) => provider.id !== "opencode",
+        (provider) => provider.id !== "viqo",
         (provider) => provider.name,
       ),
       flatMap((provider) =>
@@ -78,8 +78,8 @@ export function DialogModel(props: { providerID?: string }) {
               ? "(Favorite)"
               : undefined,
             category: connected() ? provider.name : undefined,
-            disabled: provider.id === "opencode" && model.includes("-nano"),
-            footer: info.cost?.input === 0 && provider.id === "opencode" ? "Free" : undefined,
+            disabled: provider.id === "viqo" && model.includes("-nano"),
+            footer: info.cost?.input === 0 && provider.id === "viqo" ? "Free" : undefined,
             onSelect() {
               onSelect(provider.id, model)
             },
@@ -105,16 +105,18 @@ export function DialogModel(props: { providerID?: string }) {
       ),
     )
 
-    const popularProviders = !connected()
-      ? pipe(
-          providers(),
-          map((option) => ({
-            ...option,
-            category: "Popular providers",
-          })),
-          take(6),
-        )
-      : []
+    const inferviqoOnly = sync.data.provider.length === 1 && sync.data.provider[0]?.id === "inferviqo"
+    const popularProviders =
+      !connected() && !inferviqoOnly
+        ? pipe(
+            providers(),
+            map((option) => ({
+              ...option,
+              category: "Popular providers",
+            })),
+            take(6),
+          )
+        : []
 
     if (needle) {
       return [

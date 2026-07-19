@@ -1,13 +1,13 @@
-import { AppIcon } from "@opencode-ai/ui/app-icon"
-import { Button } from "@opencode-ai/ui/button"
-import { DropdownMenu } from "@opencode-ai/ui/dropdown-menu"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { Keybind } from "@opencode-ai/ui/keybind"
-import { Spinner } from "@opencode-ai/ui/spinner"
+import { AppIcon } from "@viqo-ai/ui/app-icon"
+import { Button } from "@viqo-ai/ui/button"
+import { DropdownMenu } from "@viqo-ai/ui/dropdown-menu"
+import { Icon } from "@viqo-ai/ui/icon"
+import { IconButton } from "@viqo-ai/ui/icon-button"
+import { Keybind } from "@viqo-ai/ui/keybind"
+import { Spinner } from "@viqo-ai/ui/spinner"
 import { showToast } from "@/utils/toast"
-import { Tooltip, TooltipKeybind } from "@opencode-ai/ui/tooltip"
-import { getFilename } from "@opencode-ai/core/util/path"
+import { Tooltip, TooltipKeybind } from "@viqo-ai/ui/tooltip"
+import { getFilename } from "@viqo-ai/core/util/path"
 import { createEffect, createMemo, createSignal, For, onMount, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { createMediaQuery } from "@solid-primitives/media"
@@ -26,10 +26,10 @@ import { messageAgentColor } from "@/utils/agent"
 import { decode64 } from "@/utils/base64"
 import { Persist, persisted } from "@/utils/persist"
 import { StatusPopover, StatusPopoverV2 } from "../status-popover"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { KeybindV2 } from "@opencode-ai/ui/v2/keybind-v2"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+import { IconButtonV2 } from "@viqo-ai/ui/v2/icon-button-v2"
+import { Icon as IconV2 } from "@viqo-ai/ui/v2/icon"
+import { KeybindV2 } from "@viqo-ai/ui/v2/keybind-v2"
+import { TooltipV2 } from "@viqo-ai/ui/v2/tooltip-v2"
 import { reviewTooltipKeybind } from "../command-tooltip-keybind"
 
 const OPEN_APPS = [
@@ -286,8 +286,8 @@ export function SessionHeader() {
   const [centerMount, setCenterMount] = createSignal<HTMLElement | null>(null)
   const [rightMount, setRightMount] = createSignal<HTMLElement | null>(null)
   onMount(() => {
-    setCenterMount(document.getElementById("opencode-titlebar-center"))
-    setRightMount(document.getElementById("opencode-titlebar-right"))
+    setCenterMount(document.getElementById("viqo-titlebar-center"))
+    setRightMount(document.getElementById("viqo-titlebar-right"))
   })
 
   return (

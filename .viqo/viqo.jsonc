@@ -1,0 +1,43 @@
+{
+  "$schema": "https://inferviqo.com/config.json",
+  "model": "inferviqo/accounts/inferviqo/models/glm-5p2",
+  "enabled_providers": ["inferviqo"],
+  "provider": {
+    "inferviqo": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Inferviqo",
+      "env": ["INFERVIQO_API_KEY"],
+      "options": {
+        "baseURL": "https://api.inferviqo.com",
+        "apiKey": "{env:INFERVIQO_API_KEY}"
+      },
+      "models": {
+        "accounts/inferviqo/models/glm-5p2": { "name": "GLM 5.2" },
+        "accounts/inferviqo/models/deepseek-v4-pro": { "name": "DeepSeek V4 Pro" },
+        "accounts/inferviqo/models/gpt-oss-20b": { "name": "GPT OSS 20B" }
+      }
+    }
+  },
+  "experimental": {
+    "policies": [
+      { "effect": "deny", "action": "provider.use", "resource": "*" },
+      { "effect": "allow", "action": "provider.use", "resource": "inferviqo" }
+    ]
+  },
+  "permission": {},
+  "references": {
+    "effect": {
+      "repository": "github.com/Effect-TS/effect-smol",
+      "description": "Use for Effect v4 and effect-smol implementation details"
+    },
+    "viqo-local": {
+      "path": "~/.local/share/viqo",
+      "description": "Contains viqo logs and data"
+    }
+  },
+  "mcp": {},
+  "tools": {
+    "github-triage": false,
+    "github-pr-search": false
+  }
+}

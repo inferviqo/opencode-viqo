@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Viqo
+Exec=/opt/Viqo/ai.viqo.desktop %U
+Terminal=false
+Type=Application
+Icon=ai.viqo.desktop
+StartupWMClass=ai.viqo.desktop
+NoDisplay=true
+Comment=Open source AI coding agent
+Categories=Development;

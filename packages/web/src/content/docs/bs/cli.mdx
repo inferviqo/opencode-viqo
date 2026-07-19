@@ -1,30 +1,30 @@
 ---
 title: CLI
-description: OpenCode CLI opcije i naredbe.
+description: Viqo CLI opcije i naredbe.
 ---
 
 import { Tabs, TabItem } from "@astrojs/starlight/components"
 
-OpenCode CLI po defaultu pokreće [TUI](/docs/tui) kada se pokrene bez ikakvih argumenata.
+Viqo CLI po defaultu pokreće [TUI](/docs/tui) kada se pokrene bez ikakvih argumenata.
 
 ```bash
-opencode
+viqo
 ```
 
-Ali takođe prihvata naredbe kao što je dokumentovano na ovoj stranici. Ovo vam omogućava programsku interakciju sa OpenCode.
+Ali takođe prihvata naredbe kao što je dokumentovano na ovoj stranici. Ovo vam omogućava programsku interakciju sa Viqo.
 
 ```bash
-opencode run "Explain how closures work in JavaScript"
+viqo run "Explain how closures work in JavaScript"
 ```
 
 ---
 
 ### tui
 
-Pokrenite OpenCode terminalski korisnički interfejs.
+Pokrenite Viqo terminalski korisnički interfejs.
 
 ```bash
-opencode [project]
+viqo [project]
 ```
 
 #### Opcije
@@ -44,36 +44,36 @@ opencode [project]
 
 ## Naredbe
 
-OpenCode CLI takođe ima sljedeće naredbe.
+Viqo CLI takođe ima sljedeće naredbe.
 
 ---
 
 ### agent
 
-Upravljajte OpenCode agentima.
+Upravljajte Viqo agentima.
 
 ```bash
-opencode agent [command]
+viqo agent [command]
 ```
 
 ---
 
 ### attach
 
-Priključite terminal na već pokrenut OpenCode backend server pokrenut putem `serve` ili `web` naredbi.
+Priključite terminal na već pokrenut Viqo backend server pokrenut putem `serve` ili `web` naredbi.
 
 ```bash
-opencode attach [url]
+viqo attach [url]
 ```
 
-Ovo omogućava korištenje TUI-ja sa udaljenim OpenCode backend-om. Na primjer:
+Ovo omogućava korištenje TUI-ja sa udaljenim Viqo backend-om. Na primjer:
 
 ```bash
 # Start the backend server for web/mobile access
-opencode web --port 4096 --hostname 0.0.0.0
+viqo web --port 4096 --hostname 0.0.0.0
 
 # In another terminal, attach the TUI to the running backend
-opencode attach http://10.20.30.40:4096
+viqo attach http://10.20.30.40:4096
 ```
 
 #### Opcije
@@ -84,8 +84,8 @@ opencode attach http://10.20.30.40:4096
 | <nobr><code>{"--continue"}</code></nobr> | `-c`   | Nastavi posljednju sesiju                                                                     |
 | <nobr><code>{"--session"}</code></nobr>  | `-s`   | ID sesije za nastavak                                                                         |
 | <nobr><code>{"--fork"}</code></nobr>     |        | Forkuj sesiju prilikom nastavka (koristite sa `--continue` ili `--session`)                   |
-| <nobr><code>{"--password"}</code></nobr> | `-p`   | Lozinka za osnovnu autentifikaciju (zadano: `OPENCODE_SERVER_PASSWORD`)                       |
-| <nobr><code>{"--username"}</code></nobr> | `-u`   | Korisničko ime za osnovnu autentifikaciju (zadano: `OPENCODE_SERVER_USERNAME` ili `opencode`) |
+| <nobr><code>{"--password"}</code></nobr> | `-p`   | Lozinka za osnovnu autentifikaciju (zadano: `VIQO_SERVER_PASSWORD`)                       |
+| <nobr><code>{"--username"}</code></nobr> | `-u`   | Korisničko ime za osnovnu autentifikaciju (zadano: `VIQO_SERVER_USERNAME` ili `viqo`) |
 
 ---
 
@@ -94,7 +94,7 @@ opencode attach http://10.20.30.40:4096
 Kreirajte novog agenta s prilagođenom konfiguracijom.
 
 ```bash
-opencode agent create
+viqo agent create
 ```
 
 Ova naredba će vas voditi kroz kreiranje novog agenta sa prilagođenim sistemskim promptom i konfiguracijom alata.
@@ -106,7 +106,7 @@ Ova naredba će vas voditi kroz kreiranje novog agenta sa prilagođenim sistemsk
 Navedite sve dostupne agente.
 
 ```bash
-opencode agent list
+viqo agent list
 ```
 
 ---
@@ -116,20 +116,20 @@ opencode agent list
 Naredba za upravljanje vjerodajnicama i prijavom za provajdere.
 
 ```bash
-opencode auth [command]
+viqo auth [command]
 ```
 
 ---
 
 #### login
 
-OpenCode pokreće lista provajdera na [Models.dev](https://models.dev), tako da možete koristiti `opencode auth login` da konfigurirate API ključeve za bilo kojeg provajdera kojeg želite koristiti. Ovo je pohranjeno u `~/.local/share/opencode/auth.json`.
+Viqo pokreće lista provajdera na [Models.dev](https://models.dev), tako da možete koristiti `viqo auth login` da konfigurirate API ključeve za bilo kojeg provajdera kojeg želite koristiti. Ovo je pohranjeno u `~/.local/share/viqo/auth.json`.
 
 ```bash
-opencode auth login
+viqo auth login
 ```
 
-Kada se OpenCode pokrene, učitava dobavljače iz datoteke vjerodajnica. I ako postoje neki ključevi definirani u vašim okruženjima ili `.env` fajl u vašem projektu.
+Kada se Viqo pokrene, učitava dobavljače iz datoteke vjerodajnica. I ako postoje neki ključevi definirani u vašim okruženjima ili `.env` fajl u vašem projektu.
 
 ---
 
@@ -138,13 +138,13 @@ Kada se OpenCode pokrene, učitava dobavljače iz datoteke vjerodajnica. I ako p
 Navodi sve autentifikovane dobavljače pohranjene u datoteci vjerodajnica.
 
 ```bash
-opencode auth list
+viqo auth list
 ```
 
 Ili kratka verzija.
 
 ```bash
-opencode auth ls
+viqo auth ls
 ```
 
 ---
@@ -154,7 +154,7 @@ opencode auth ls
 Odjavljuje vas s provajdera tako što ga briše iz datoteke vjerodajnica.
 
 ```bash
-opencode auth logout
+viqo auth logout
 ```
 
 ---
@@ -164,7 +164,7 @@ opencode auth logout
 Upravljajte GitHub agentom za automatizaciju repozitorija.
 
 ```bash
-opencode github [command]
+viqo github [command]
 ```
 
 ---
@@ -174,7 +174,7 @@ opencode github [command]
 Instalirajte GitHub agenta u svoj repozitorij.
 
 ```bash
-opencode github install
+viqo github install
 ```
 
 Ovo postavlja neophodni tok rada GitHub Actions i vodi vas kroz proces konfiguracije. [Saznajte više](/docs/github).
@@ -186,7 +186,7 @@ Ovo postavlja neophodni tok rada GitHub Actions i vodi vas kroz proces konfigura
 Pokrenite GitHub agent. Ovo se obično koristi u GitHub Actions.
 
 ```bash
-opencode github run
+viqo github run
 ```
 
 ##### Opcije
@@ -203,7 +203,7 @@ opencode github run
 Upravljajte Model Context Protocol (MCP) serverima.
 
 ```bash
-opencode mcp [command]
+viqo mcp [command]
 ```
 
 ---
@@ -213,7 +213,7 @@ opencode mcp [command]
 Dodajte MCP server svojoj konfiguraciji.
 
 ```bash
-opencode mcp add
+viqo mcp add
 ```
 
 Ova naredba će vas voditi kroz dodavanje lokalnog ili udaljenog MCP servera.
@@ -225,13 +225,13 @@ Ova naredba će vas voditi kroz dodavanje lokalnog ili udaljenog MCP servera.
 Navedite sve konfigurirane MCP servere i njihov status veze.
 
 ```bash
-opencode mcp list
+viqo mcp list
 ```
 
 Ili koristite kratku verziju.
 
 ```bash
-opencode mcp ls
+viqo mcp ls
 ```
 
 ---
@@ -241,20 +241,20 @@ opencode mcp ls
 Autentifikujte se sa MCP serverom koji je omogućen za OAuth.
 
 ```bash
-opencode mcp auth [name]
+viqo mcp auth [name]
 ```
 
 Ako ne navedete ime servera, od vas će biti zatraženo da izaberete neki od dostupnih servera koji podržavaju OAuth.
 Također možete navesti servere koji podržavaju OAuth i njihov status autentifikacije.
 
 ```bash
-opencode mcp auth list
+viqo mcp auth list
 ```
 
 Ili koristite kratku verziju.
 
 ```bash
-opencode mcp auth ls
+viqo mcp auth ls
 ```
 
 ---
@@ -264,7 +264,7 @@ opencode mcp auth ls
 Uklonite OAuth vjerodajnice za MCP server.
 
 ```bash
-opencode mcp logout [name]
+viqo mcp logout [name]
 ```
 
 ---
@@ -274,7 +274,7 @@ opencode mcp logout [name]
 Otklanjanje grešaka (debug) OAuth veze sa MCP serverom.
 
 ```bash
-opencode mcp debug <name>
+viqo mcp debug <name>
 ```
 
 ---
@@ -284,7 +284,7 @@ opencode mcp debug <name>
 Navedite sve dostupne modele konfiguriranih provajdera.
 
 ```bash
-opencode models [provider]
+viqo models [provider]
 ```
 
 Ova naredba prikazuje sve modele dostupne kod vaših konfiguriranih provajdera u formatu `provider/model`.
@@ -292,7 +292,7 @@ Ovo je korisno za pronalaženje tačnog naziva modela za korištenje u [vašoj k
 Opciono možete proslijediti ID provajdera za filtriranje modela po tom dobavljaču.
 
 ```bash
-opencode models anthropic
+viqo models anthropic
 ```
 
 #### Opcije
@@ -302,36 +302,36 @@ opencode models anthropic
 | <nobr><code>{"--refresh"}</code></nobr> | Osvježite keš modela sa models.dev                                       |
 | <nobr><code>{"--verbose"}</code></nobr> | Koristite detaljniji izlaz modela (uključuje metapodatke poput troškova) |
 
-Koristite `--refresh` zastavicu da ažurirate keširanu listu modela. Ovo je korisno kada su novi modeli dodani provajderu i želite da ih vidite u OpenCode.
+Koristite `--refresh` zastavicu da ažurirate keširanu listu modela. Ovo je korisno kada su novi modeli dodani provajderu i želite da ih vidite u Viqo.
 
 ```bash
-opencode models --refresh
+viqo models --refresh
 ```
 
 ---
 
 ### run
 
-Pokrenite OpenCode u neinteraktivnom modu tako što ćete direktno proslijediti prompt.
+Pokrenite Viqo u neinteraktivnom modu tako što ćete direktno proslijediti prompt.
 
 ```bash
-opencode run [message..]
+viqo run [message..]
 ```
 
 Ovo je korisno za skriptiranje, automatizaciju ili kada želite brz odgovor bez pokretanja punog TUI-ja. Na primjer:
 
-```bash "opencode run"
-opencode run Explain the use of context in Go
+```bash "viqo run"
+viqo run Explain the use of context in Go
 ```
 
-Također možete priključiti pokrenutu `opencode serve` instancu kako biste izbjegli vrijeme hladnog pokretanja MCP servera pri svakom pokretanju:
+Također možete priključiti pokrenutu `viqo serve` instancu kako biste izbjegli vrijeme hladnog pokretanja MCP servera pri svakom pokretanju:
 
 ```bash
 # Start a headless server in one terminal
-opencode serve
+viqo serve
 
 # In another terminal, run commands that attach to it
-opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
+viqo run --attach http://localhost:4096 "Explain async/await in JavaScript"
 ```
 
 #### Opcije
@@ -348,9 +348,9 @@ opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
 | <nobr><code>{"--file"}</code></nobr>     | `-f`   | Fajlovi koje treba priložiti poruci                                                           |
 | <nobr><code>{"--format"}</code></nobr>   |        | Format: default (formatiran) ili json (sirovi JSON događaji)                                  |
 | <nobr><code>{"--title"}</code></nobr>    |        | Naslov sesije (koristi skraćeni prompt ako nije navedena vrijednost)                          |
-| <nobr><code>{"--attach"}</code></nobr>   |        | Priključite na pokrenuti OpenCode server (npr. http://localhost:4096)                         |
-| <nobr><code>{"--password"}</code></nobr> | `-p`   | Lozinka za osnovnu autentifikaciju (zadano: `OPENCODE_SERVER_PASSWORD`)                       |
-| <nobr><code>{"--username"}</code></nobr> | `-u`   | Korisničko ime za osnovnu autentifikaciju (zadano: `OPENCODE_SERVER_USERNAME` ili `opencode`) |
+| <nobr><code>{"--attach"}</code></nobr>   |        | Priključite na pokrenuti Viqo server (npr. http://localhost:4096)                         |
+| <nobr><code>{"--password"}</code></nobr> | `-p`   | Lozinka za osnovnu autentifikaciju (zadano: `VIQO_SERVER_PASSWORD`)                       |
+| <nobr><code>{"--username"}</code></nobr> | `-u`   | Korisničko ime za osnovnu autentifikaciju (zadano: `VIQO_SERVER_USERNAME` ili `viqo`) |
 | <nobr><code>{"--dir"}</code></nobr>      |        | Direktorij za pokretanje, ili putanja na udaljenom serveru pri spajanju                       |
 | <nobr><code>{"--variant"}</code></nobr>  |        | Varijanta modela (napor zaključivanja specifičan za provajdera)                               |
 | <nobr><code>{"--thinking"}</code></nobr> |        | Prikaži blokove razmišljanja                                                                  |
@@ -360,13 +360,13 @@ opencode run --attach http://localhost:4096 "Explain async/await in JavaScript"
 
 ### serve
 
-Pokrenite OpenCode headless server za API pristup. Pogledajte [server docs](/docs/server) za kompletan HTTP interfejs.
+Pokrenite Viqo headless server za API pristup. Pogledajte [server docs](/docs/server) za kompletan HTTP interfejs.
 
 ```bash
-opencode serve
+viqo serve
 ```
 
-Ovo pokreće HTTP server koji pruža API pristup funkcionalnosti OpenCode-a bez TUI interfejsa. Postavite `OPENCODE_SERVER_PASSWORD` da omogućite HTTP osnovnu auth (korisničko ime je zadano na `opencode`).
+Ovo pokreće HTTP server koji pruža API pristup funkcionalnosti Viqo-a bez TUI interfejsa. Postavite `VIQO_SERVER_PASSWORD` da omogućite HTTP osnovnu auth (korisničko ime je zadano na `viqo`).
 
 #### Opcije
 
@@ -381,20 +381,20 @@ Ovo pokreće HTTP server koji pruža API pristup funkcionalnosti OpenCode-a bez 
 
 ### session
 
-Upravljajte OpenCode sesijama.
+Upravljajte Viqo sesijama.
 
 ```bash
-opencode session [command]
+viqo session [command]
 ```
 
 ---
 
 #### list
 
-Navedite sve OpenCode sesije.
+Navedite sve Viqo sesije.
 
 ```bash
-opencode session list
+viqo session list
 ```
 
 ##### Opcije
@@ -408,10 +408,10 @@ opencode session list
 
 ### stats
 
-Prikaži statistiku upotrebe tokena i troškova za vaše OpenCode sesije.
+Prikaži statistiku upotrebe tokena i troškova za vaše Viqo sesije.
 
 ```bash
-opencode stats
+viqo stats
 ```
 
 #### Opcije
@@ -430,7 +430,7 @@ opencode stats
 Izvezite podatke sesije kao JSON.
 
 ```bash
-opencode export [sessionID]
+viqo export [sessionID]
 ```
 
 Ako ne unesete ID sesije, od vas će biti zatraženo da odaberete neku od dostupnih sesija.
@@ -439,30 +439,30 @@ Ako ne unesete ID sesije, od vas će biti zatraženo da odaberete neku od dostup
 
 ### import
 
-Uvezite podatke sesije iz JSON datoteke ili OpenCode dijeljenog URL-a.
+Uvezite podatke sesije iz JSON datoteke ili Viqo dijeljenog URL-a.
 
 ```bash
-opencode import <file>
+viqo import <file>
 ```
 
-Možete uvesti iz lokalne datoteke ili OpenCode dijeljenog URL-a.
+Možete uvesti iz lokalne datoteke ili Viqo dijeljenog URL-a.
 
 ```bash
-opencode import session.json
-opencode import https://opncd.ai/s/abc123
+viqo import session.json
+viqo import https://opncd.ai/s/abc123
 ```
 
 ---
 
 ### web
 
-Pokrenite OpenCode headless server sa web interfejsom.
+Pokrenite Viqo headless server sa web interfejsom.
 
 ```bash
-opencode web
+viqo web
 ```
 
-Ovo pokreće HTTP server i otvara web pretraživač za pristup OpenCode-u preko web interfejsa. Postavite `OPENCODE_SERVER_PASSWORD` da omogućite HTTP osnovnu auth (korisničko ime je zadano na `opencode`).
+Ovo pokreće HTTP server i otvara web pretraživač za pristup Viqo-u preko web interfejsa. Postavite `VIQO_SERVER_PASSWORD` da omogućite HTTP osnovnu auth (korisničko ime je zadano na `viqo`).
 
 #### Opcije
 
@@ -480,7 +480,7 @@ Ovo pokreće HTTP server i otvara web pretraživač za pristup OpenCode-u preko 
 Pokrenite ACP (Agent Client Protocol) server.
 
 ```bash
-opencode acp
+viqo acp
 ```
 
 Ova naredba pokreće ACP server koji komunicira preko stdin/stdout koristeći nd-JSON.
@@ -497,10 +497,10 @@ Ova naredba pokreće ACP server koji komunicira preko stdin/stdout koristeći nd
 
 ### uninstall
 
-Deinstalirajte OpenCode i uklonite sve povezane datoteke.
+Deinstalirajte Viqo i uklonite sve povezane datoteke.
 
 ```bash
-opencode uninstall
+viqo uninstall
 ```
 
 #### Opcije
@@ -516,22 +516,22 @@ opencode uninstall
 
 ### upgrade
 
-Ažurira OpenCode na najnoviju verziju ili određenu verziju.
+Ažurira Viqo na najnoviju verziju ili određenu verziju.
 
 ```bash
-opencode upgrade [target]
+viqo upgrade [target]
 ```
 
 Za nadogradnju na najnoviju verziju.
 
 ```bash
-opencode upgrade
+viqo upgrade
 ```
 
 Za nadogradnju na određenu verziju.
 
 ```bash
-opencode upgrade v0.1.48
+viqo upgrade v0.1.48
 ```
 
 #### Opcije
@@ -544,7 +544,7 @@ opencode upgrade v0.1.48
 
 ## Globalne opcije
 
-OpenCode CLI prihvata sljedeće globalne zastavice.
+Viqo CLI prihvata sljedeće globalne zastavice.
 
 | Opcija                                     | Kratko | Opis                                      |
 | ------------------------------------------ | ------ | ----------------------------------------- |
@@ -557,34 +557,34 @@ OpenCode CLI prihvata sljedeće globalne zastavice.
 
 ## Varijable okruženja
 
-OpenCode se može konfigurirati pomoću varijabli okruženja.
+Viqo se može konfigurirati pomoću varijabli okruženja.
 
 | Varijabla                             | Tip     | Opis                                                               |
 | ------------------------------------- | ------- | ------------------------------------------------------------------ |
-| `OPENCODE_AUTO_SHARE`                 | boolean | Automatski dijeli sesije                                           |
-| `OPENCODE_GIT_BASH_PATH`              | string  | Putanja do Git Bash izvršne datoteke na Windows-u                  |
-| `OPENCODE_CONFIG`                     | string  | Putanja do konfiguracijskog fajla                                  |
-| `OPENCODE_TUI_CONFIG`                 | string  | Putanja do TUI konfiguracijskog fajla                              |
-| `OPENCODE_CONFIG_DIR`                 | string  | Putanja do konfiguracijskog direktorija                            |
-| `OPENCODE_CONFIG_CONTENT`             | string  | Inline json konfiguracijski sadržaj                                |
-| `OPENCODE_DISABLE_AUTOUPDATE`         | boolean | Onemogući automatske provjere ažuriranja                           |
-| `OPENCODE_DISABLE_PRUNE`              | boolean | Onemogući brisanje (pruning) starih podataka                       |
-| `OPENCODE_DISABLE_TERMINAL_TITLE`     | boolean | Onemogući automatsko ažuriranje naslova terminala                  |
-| `OPENCODE_PERMISSION`                 | string  | Inline json konfiguracija dozvola                                  |
-| `OPENCODE_DISABLE_DEFAULT_PLUGINS`    | boolean | Onemogući podrazumijevane dodatke (plugins)                        |
-| `OPENCODE_DISABLE_LSP_DOWNLOAD`       | boolean | Onemogući automatsko preuzimanje LSP servera                       |
-| `OPENCODE_ENABLE_EXPERIMENTAL_MODELS` | boolean | Omogući eksperimentalne modele                                     |
-| `OPENCODE_DISABLE_AUTOCOMPACT`        | boolean | Onemogući automatsko sažimanje konteksta                           |
-| `OPENCODE_DISABLE_CLAUDE_CODE`        | boolean | Onemogući čitanje iz `.claude` (prompt + vještine)                 |
-| `OPENCODE_DISABLE_CLAUDE_CODE_PROMPT` | boolean | Onemogući čitanje `~/.claude/CLAUDE.md`                            |
-| `OPENCODE_DISABLE_CLAUDE_CODE_SKILLS` | boolean | Onemogući učitavanje `.claude/skills`                              |
-| `OPENCODE_DISABLE_MODELS_FETCH`       | boolean | Onemogući dohvaćanje modela iz udaljenih izvora                    |
-| `OPENCODE_FAKE_VCS`                   | string  | Lažni VCS provajder za potrebe testiranja                          |
-| `OPENCODE_CLIENT`                     | string  | Identifikator klijenta (zadano na `cli`)                           |
-| `OPENCODE_ENABLE_EXA`                 | boolean | Omogući Exa alate za web pretraživanje                             |
-| `OPENCODE_SERVER_PASSWORD`            | string  | Omogući osnovnu autentifikaciju za `serve`/`web`                   |
-| `OPENCODE_SERVER_USERNAME`            | string  | Poništi osnovno korisničko ime autentifikacije (zadano `opencode`) |
-| `OPENCODE_MODELS_URL`                 | string  | Prilagođeni URL za dohvaćanje konfiguracije modela                 |
+| `VIQO_AUTO_SHARE`                 | boolean | Automatski dijeli sesije                                           |
+| `VIQO_GIT_BASH_PATH`              | string  | Putanja do Git Bash izvršne datoteke na Windows-u                  |
+| `VIQO_CONFIG`                     | string  | Putanja do konfiguracijskog fajla                                  |
+| `VIQO_TUI_CONFIG`                 | string  | Putanja do TUI konfiguracijskog fajla                              |
+| `VIQO_CONFIG_DIR`                 | string  | Putanja do konfiguracijskog direktorija                            |
+| `VIQO_CONFIG_CONTENT`             | string  | Inline json konfiguracijski sadržaj                                |
+| `VIQO_DISABLE_AUTOUPDATE`         | boolean | Onemogući automatske provjere ažuriranja                           |
+| `VIQO_DISABLE_PRUNE`              | boolean | Onemogući brisanje (pruning) starih podataka                       |
+| `VIQO_DISABLE_TERMINAL_TITLE`     | boolean | Onemogući automatsko ažuriranje naslova terminala                  |
+| `VIQO_PERMISSION`                 | string  | Inline json konfiguracija dozvola                                  |
+| `VIQO_DISABLE_DEFAULT_PLUGINS`    | boolean | Onemogući podrazumijevane dodatke (plugins)                        |
+| `VIQO_DISABLE_LSP_DOWNLOAD`       | boolean | Onemogući automatsko preuzimanje LSP servera                       |
+| `VIQO_ENABLE_EXPERIMENTAL_MODELS` | boolean | Omogući eksperimentalne modele                                     |
+| `VIQO_DISABLE_AUTOCOMPACT`        | boolean | Onemogući automatsko sažimanje konteksta                           |
+| `VIQO_DISABLE_CLAUDE_CODE`        | boolean | Onemogući čitanje iz `.claude` (prompt + vještine)                 |
+| `VIQO_DISABLE_CLAUDE_CODE_PROMPT` | boolean | Onemogući čitanje `~/.claude/CLAUDE.md`                            |
+| `VIQO_DISABLE_CLAUDE_CODE_SKILLS` | boolean | Onemogući učitavanje `.claude/skills`                              |
+| `VIQO_DISABLE_MODELS_FETCH`       | boolean | Onemogući dohvaćanje modela iz udaljenih izvora                    |
+| `VIQO_FAKE_VCS`                   | string  | Lažni VCS provajder za potrebe testiranja                          |
+| `VIQO_CLIENT`                     | string  | Identifikator klijenta (zadano na `cli`)                           |
+| `VIQO_ENABLE_EXA`                 | boolean | Omogući Exa alate za web pretraživanje                             |
+| `VIQO_SERVER_PASSWORD`            | string  | Omogući osnovnu autentifikaciju za `serve`/`web`                   |
+| `VIQO_SERVER_USERNAME`            | string  | Poništi osnovno korisničko ime autentifikacije (zadano `viqo`) |
+| `VIQO_MODELS_URL`                 | string  | Prilagođeni URL za dohvaćanje konfiguracije modela                 |
 
 ---
 
@@ -594,21 +594,21 @@ Ove varijable okruženja omogućavaju eksperimentalne karakteristike koje se mog
 
 | Varijabla                                       | Tip     | Opis                                                    |
 | ----------------------------------------------- | ------- | ------------------------------------------------------- |
-| `OPENCODE_EXPERIMENTAL`                         | boolean | Omogući eksperimentalne funkcije pod zbirnom zastavicom |
-| `OPENCODE_EXPERIMENTAL_ICON_DISCOVERY`          | boolean | Omogući otkrivanje ikona                                |
-| `OPENCODE_EXPERIMENTAL_DISABLE_COPY_ON_SELECT`  | boolean | Onemogući kopiranje pri odabiru u TUI                   |
-| `OPENCODE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS` | number  | Zadano vremensko ograničenje za bash naredbe u ms       |
-| `OPENCODE_EXPERIMENTAL_OUTPUT_TOKEN_MAX`        | number  | Maksimalni izlazni tokeni za LLM odgovore               |
-| `OPENCODE_EXPERIMENTAL_FILEWATCHER`             | boolean | Omogući praćenje datoteka za cijeli direktorij          |
-| `OPENCODE_EXPERIMENTAL_OXFMT`                   | boolean | Omogući oxfmt formatter                                 |
-| `OPENCODE_EXPERIMENTAL_LSP_TOOL`                | boolean | Omogući eksperimentalni LSP alat                        |
-| `OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER`     | boolean | Onemogući praćenje datoteka                             |
-| `OPENCODE_EXPERIMENTAL_EXA`                     | boolean | Omogući eksperimentalne Exa funkcije                    |
-| `OPENCODE_EXPERIMENTAL_LSP_TY`                  | boolean | Omogući TY LSP za python datoteke                       |
-| `OPENCODE_EXPERIMENTAL_PLAN_MODE`               | boolean | Omogući Plan mod                                        |
-| `OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS`    | boolean | Omogući pozadinske zadatke subagenata                   |
-| `OPENCODE_EXPERIMENTAL_EVENT_SYSTEM`            | boolean | Omogući eksperimentalni sistem događaja                 |
-| `OPENCODE_EXPERIMENTAL_NATIVE_LLM`              | boolean | Omogući nativnu putanju LLM zahtjeva                    |
-| `OPENCODE_EXPERIMENTAL_PARALLEL`                | boolean | Omogući paralelno izvršavanje web pretrage              |
-| `OPENCODE_EXPERIMENTAL_SCOUT`                   | boolean | Omogući Scout subagenta                                 |
-| `OPENCODE_EXPERIMENTAL_WORKSPACES`              | boolean | Omogući podršku za radne prostore                       |
+| `VIQO_EXPERIMENTAL`                         | boolean | Omogući eksperimentalne funkcije pod zbirnom zastavicom |
+| `VIQO_EXPERIMENTAL_ICON_DISCOVERY`          | boolean | Omogući otkrivanje ikona                                |
+| `VIQO_EXPERIMENTAL_DISABLE_COPY_ON_SELECT`  | boolean | Onemogući kopiranje pri odabiru u TUI                   |
+| `VIQO_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS` | number  | Zadano vremensko ograničenje za bash naredbe u ms       |
+| `VIQO_EXPERIMENTAL_OUTPUT_TOKEN_MAX`        | number  | Maksimalni izlazni tokeni za LLM odgovore               |
+| `VIQO_EXPERIMENTAL_FILEWATCHER`             | boolean | Omogući praćenje datoteka za cijeli direktorij          |
+| `VIQO_EXPERIMENTAL_OXFMT`                   | boolean | Omogući oxfmt formatter                                 |
+| `VIQO_EXPERIMENTAL_LSP_TOOL`                | boolean | Omogući eksperimentalni LSP alat                        |
+| `VIQO_EXPERIMENTAL_DISABLE_FILEWATCHER`     | boolean | Onemogući praćenje datoteka                             |
+| `VIQO_EXPERIMENTAL_EXA`                     | boolean | Omogući eksperimentalne Exa funkcije                    |
+| `VIQO_EXPERIMENTAL_LSP_TY`                  | boolean | Omogući TY LSP za python datoteke                       |
+| `VIQO_EXPERIMENTAL_PLAN_MODE`               | boolean | Omogući Plan mod                                        |
+| `VIQO_EXPERIMENTAL_BACKGROUND_SUBAGENTS`    | boolean | Omogući pozadinske zadatke subagenata                   |
+| `VIQO_EXPERIMENTAL_EVENT_SYSTEM`            | boolean | Omogući eksperimentalni sistem događaja                 |
+| `VIQO_EXPERIMENTAL_NATIVE_LLM`              | boolean | Omogući nativnu putanju LLM zahtjeva                    |
+| `VIQO_EXPERIMENTAL_PARALLEL`                | boolean | Omogući paralelno izvršavanje web pretrage              |
+| `VIQO_EXPERIMENTAL_SCOUT`                   | boolean | Omogući Scout subagenta                                 |
+| `VIQO_EXPERIMENTAL_WORKSPACES`              | boolean | Omogući podršku za radne prostore                       |

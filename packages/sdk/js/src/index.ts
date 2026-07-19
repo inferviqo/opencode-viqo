@@ -1,16 +1,16 @@
 export * from "./client.js"
 export * from "./server.js"
 
-import { createOpencodeClient } from "./client.js"
-import { createOpencodeServer } from "./server.js"
+import { createViqoClient } from "./client.js"
+import { createViqoServer } from "./server.js"
 import type { ServerOptions } from "./server.js"
 
 export async function createOpencode(options?: ServerOptions) {
-  const server = await createOpencodeServer({
+  const server = await createViqoServer({
     ...options,
   })
 
-  const client = createOpencodeClient({
+  const client = createViqoClient({
     baseUrl: server.url,
   })
 

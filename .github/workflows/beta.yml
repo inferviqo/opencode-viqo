@@ -24,14 +24,14 @@ jobs:
         id: setup-git-committer
         uses: ./.github/actions/setup-git-committer
         with:
-          opencode-app-id: ${{ vars.OPENCODE_APP_ID }}
-          opencode-app-secret: ${{ secrets.OPENCODE_APP_SECRET }}
+          viqo-app-id: ${{ vars.VIQO_APP_ID }}
+          viqo-app-secret: ${{ secrets.VIQO_APP_SECRET }}
 
-      - name: Install OpenCode
-        run: bun i -g opencode-ai
+      - name: Install Viqo
+        run: bun i -g viqo-ai
 
       - name: Sync beta branch
         env:
           GH_TOKEN: ${{ steps.setup-git-committer.outputs.token }}
-          OPENCODE_API_KEY: ${{ secrets.OPENCODE_API_KEY }}
+          VIQO_API_KEY: ${{ secrets.VIQO_API_KEY }}
         run: bun script/beta.ts

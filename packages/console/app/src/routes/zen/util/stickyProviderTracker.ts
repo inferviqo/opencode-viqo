@@ -1,5 +1,5 @@
-import { Database, eq } from "@opencode-ai/console-core/drizzle/index.js"
-import { ModelStickyProviderTable } from "@opencode-ai/console-core/schema/ip.sql.js"
+import { Database, eq } from "@viqo-ai/console-core/drizzle/index.js"
+import { ModelStickyProviderTable } from "@viqo-ai/console-core/schema/ip.sql.js"
 
 export function createStickyTracker(
   modelId: string,

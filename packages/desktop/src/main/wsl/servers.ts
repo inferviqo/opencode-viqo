@@ -13,7 +13,7 @@ import type {
 } from "../../preload/types"
 import { WSL_SERVERS_KEY } from "../store-keys"
 import { getStore } from "../store"
-import { expectOpencodeVersion, pendingRestartAfterWslInstall, wslServerIdsToStartOnInitialize } from "./startup"
+import { expectViqoVersion, pendingRestartAfterWslInstall, wslServerIdsToStartOnInitialize } from "./startup"
 import { clearWslDistroState, wslServerIdToRestart } from "./policy"
 import {
   installWslDistro,
@@ -25,7 +25,7 @@ import {
   probeWslDistro,
   probeWslRuntime,
   readWslCommandVersion,
-  resolveWslOpencode,
+  resolveWslViqo,
   summarize,
 } from "./runtime"
 
@@ -48,7 +48,7 @@ type WslServersControllerOptions = {
   readServers?: () => WslServerConfig[]
   writeServers?: (servers: WslServerConfig[]) => void
   probeDistro?: typeof probeWslDistro
-  resolveOpencode?: typeof resolveWslOpencode
+  resolveOpencode?: typeof resolveWslViqo
   readCommandVersion?: typeof readWslCommandVersion
 }
 
@@ -123,19 +123,19 @@ export function createWslServersController(
 
   const setOpencodeCheck = (distro: string, check: WslOpencodeCheck) => {
     setState({
-      opencodeChecks: {
-        ...state.opencodeChecks,
+      viqoChecks: {
+        ...state.viqoChecks,
         [distro]: check,
       },
     })
   }
 
   const checkOpencode = async (distro: string, opts?: { signal?: AbortSignal }) => {
-    const resolved = await (options?.resolveOpencode ?? resolveWslOpencode)(distro, opts)
+    const resolved = await (options?.resolveOpencode ?? resolveWslViqo)(distro, opts)
     const version = resolved
       ? await (options?.readCommandVersion ?? readWslCommandVersion)(resolved, distro, opts)
       : null
-    return opencodeCheck(distro, resolved, version, appVersion)
+    return viqoCheck(distro, resolved, version, appVersion)
   }
 
   const refreshOpencodeCheck = async (distro: string, opts?: { signal?: AbortSignal }) => {
@@ -153,14 +153,14 @@ export function createWslServersController(
       setState({ distroProbes: { ...state.distroProbes, ...Object.fromEntries(distroProbes) } })
     }
 
-    const opencodeChecks = await Promise.all(
+    const viqoChecks = await Promise.all(
       unique
         .filter((distro) => distroProbeReady(state.distroProbes[distro]))
-        .filter((distro) => !state.opencodeChecks[distro])
+        .filter((distro) => !state.viqoChecks[distro])
         .map(async (distro) => [distro, await checkOpencode(distro, opts)] as const),
     )
-    if (opencodeChecks.length) {
-      setState({ opencodeChecks: { ...state.opencodeChecks, ...Object.fromEntries(opencodeChecks) } })
+    if (viqoChecks.length) {
+      setState({ viqoChecks: { ...state.viqoChecks, ...Object.fromEntries(viqoChecks) } })
     }
   }
 
@@ -176,7 +176,7 @@ export function createWslServersController(
       })
       .catch((error) => {
         const message = error instanceof Error ? error.message : String(error)
-        logger?.error("wsl opencode check failed", { id, distro, message })
+        logger?.error("wsl viqo check failed", { id, distro, message })
       })
   }
 
@@ -190,7 +190,7 @@ export function createWslServersController(
           })
           .catch((error) => {
             const message = error instanceof Error ? error.message : String(error)
-            logger?.error("wsl opencode check failed", {
+            logger?.error("wsl viqo check failed", {
               id: item.config.id,
               distro: item.config.distro,
               message,
@@ -359,13 +359,13 @@ export function createWslServersController(
     },
 
     async installOpencode(name: string) {
-      await runJob({ kind: "install-opencode", distro: name, startedAt: Date.now() }, async (abort) => {
+      await runJob({ kind: "install-viqo", distro: name, startedAt: Date.now() }, async (abort) => {
         const result = await installWslOpencode(appVersion, name, { signal: abort.signal })
         if (result.code !== 0) {
-          throw new Error(summarize(result.stderr || result.stdout) || "OpenCode installation failed")
+          throw new Error(summarize(result.stderr || result.stdout) || "Viqo installation failed")
         }
         await refreshOpencodeCheck(name, { signal: abort.signal })
-        expectOpencodeVersion(state.opencodeChecks[name]?.version ?? null, appVersion, name)
+        expectViqoVersion(state.viqoChecks[name]?.version ?? null, appVersion, name)
         const id = wslServerIdToRestart(state.servers, name)
         if (id) await startServer(id)
       })
@@ -400,7 +400,7 @@ export function createWslServersController(
       persistServers(remaining)
       setState({
         servers: state.servers.filter((item) => item.config.id !== id),
-        ...(distro ? clearWslDistroState(state.distroProbes, state.opencodeChecks, distro) : {}),
+        ...(distro ? clearWslDistroState(state.distroProbes, state.viqoChecks, distro) : {}),
       })
     },
 
@@ -426,7 +426,7 @@ function initialState(): WslServersState {
     installed: [],
     online: [],
     distroProbes: {},
-    opencodeChecks: {},
+    viqoChecks: {},
     pendingRestart: false,
     servers: [],
     job: null,
@@ -462,7 +462,7 @@ function normalizePersistedServer(value: unknown): WslServerConfig[] {
   ]
 }
 
-function opencodeCheck(
+function viqoCheck(
   distro: string,
   resolvedPath: string | null,
   version: string | null,
@@ -475,7 +475,7 @@ function opencodeCheck(
       version: null,
       expectedVersion,
       matchesDesktop: null,
-      error: "opencode is not installed in this distro",
+      error: "viqo is not installed in this distro",
     }
   }
   if (!version) {
@@ -485,7 +485,7 @@ function opencodeCheck(
       version: null,
       expectedVersion,
       matchesDesktop: null,
-      error: "opencode is installed but could not run",
+      error: "viqo is installed but could not run",
     }
   }
   return {

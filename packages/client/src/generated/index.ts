@@ -1,3 +1,3 @@
 export { ClientError, type ClientErrorReason } from "./client-error"
-export * as OpenCode from "./client"
+export * as Viqo from "./client"
 export * from "./types"

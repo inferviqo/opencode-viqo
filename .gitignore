@@ -20,15 +20,38 @@ ts-dist
 /result
 refs
 Session.vim
-/opencode.json
+/viqo.json
 a.out
 target
 .scripts
 .direnv/
 
 # Local dev files
-opencode-dev
+viqo-dev
 UPCOMING_CHANGELOG.md
 logs/
+*.log
 *.bun-build
 tsconfig.tsbuildinfo
+
+# IDE / assistants
+.cursor/
+.claude/
+.zed/
+.aider*
+
+# Local user overrides (never commit personal API keys / paths)
+.viqo/viqo.local.jsonc
+.viqo/viqo.local.json
+viqo.local.jsonc
+viqo.local.json
+
+# Python cache (in case any Python scripts land here)
+__pycache__/
+*.pyc
+
+# Installer / binary artifacts you don't want in git
+*.dmg
+*.pkg
+*.exe
+*.msi

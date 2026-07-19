@@ -1,11 +1,11 @@
 {
-  "name": "@opencode-ai/ui",
+  "name": "@viqo-ai/ui",
   "version": "1.17.13",
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anomalyco/opencode.git",
+    "url": "git+https://github.com/Inferviqo/viqo.git",
     "directory": "packages/ui"
   },
   "publishConfig": {

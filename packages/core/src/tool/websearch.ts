@@ -5,35 +5,27 @@ import { Context, Duration, Effect, Layer, Schema } from "effect"
 import { HttpClient, HttpClientRequest } from "effect/unstable/http"
 import { makeLocationNode } from "../effect/app-node"
 import { LayerNodePlatform } from "../effect/app-node-platform"
-import { truthy } from "../flag/flag"
 import { InstallationVersion } from "../installation/version"
 import { PositiveInt } from "../schema"
 import { PermissionV2 } from "../permission"
 import { Tool } from "./tool"
 import { Tools } from "./tools"
 import { collectBoundedResponseBody } from "./http-body"
-import { checksum } from "../util/encode"
 import { ToolRegistry } from "./registry"
 
 export const name = "websearch"
 export const NO_RESULTS = "No search results found. Please try a different query."
-export const EXA_URL = "https://mcp.exa.ai/mcp"
-export const PARALLEL_URL = "https://search.parallel.ai/mcp"
 export const MAX_NUM_RESULTS = 20
 export const MAX_CONTEXT_CHARACTERS = 50_000
 export const MAX_RESPONSE_BYTES = 256 * 1024
 
 /**
- * Provider-independent local web search retained in V2 core for launch parity.
- * This invokes the legacy Exa/Parallel product backends itself. It is distinct
- * from provider-hosted web search tools, which remain route-owned and execute
- * at the model provider. Ownership of this compromise can be revisited later.
+ * Local websearch tool. Always calls the Inferviqo gateway (`POST /v1/websearch`),
+ * which proxies to private SearXNG. Distinct from provider-hosted web_search tools.
  */
-export const description = `Search the web using the session's local web search provider. Use this for current information beyond knowledge cutoff.
+export const description = `Search the web for current information beyond knowledge cutoff.
 
-This is a provider-independent local tool backed by Exa or Parallel. Provider-hosted web search tools are separate and execute at the model provider.
-
-Optional controls support result count, live crawling ('fallback' or 'preferred'), search type ('auto', 'fast', or 'deep'), and maximum context characters.
+Uses the Inferviqo websearch gateway. Optional controls support result count.
 
 The current year is ${new Date().getFullYear()}. Use this year when searching for recent information or current events.`
 
@@ -56,132 +48,109 @@ export const Input = Schema.Struct({
   ),
 })
 
-export const Provider = Schema.Literals(["exa", "parallel"])
+export const Provider = Schema.Literals(["inferviqo"])
 export type Provider = typeof Provider.Type
 
 export interface Config {
-  readonly provider?: Provider
-  readonly enableExa: boolean
-  readonly enableParallel: boolean
-  readonly exaApiKey?: string
-  readonly parallelApiKey?: string
+  readonly inferviqoApiKey?: string
+  readonly inferviqoBaseUrl?: string
 }
 
 export class ConfigService extends Context.Service<ConfigService, Config>()("@viqo/v2/WebSearchConfig") {}
 
-/** Isolates the retained product environment contract from the generic tool implementation. */
 export const defaultConfigLayer = Layer.sync(ConfigService, () =>
   ConfigService.of({
-    provider:
-      process.env.VIQO_WEBSEARCH_PROVIDER === "exa" || process.env.VIQO_WEBSEARCH_PROVIDER === "parallel"
-        ? process.env.VIQO_WEBSEARCH_PROVIDER
-        : undefined,
-    enableExa: truthy("VIQO_EXPERIMENTAL") || truthy("VIQO_ENABLE_EXA") || truthy("VIQO_EXPERIMENTAL_EXA"),
-    enableParallel: truthy("VIQO_ENABLE_PARALLEL") || truthy("VIQO_EXPERIMENTAL_PARALLEL"),
-    exaApiKey: process.env.EXA_API_KEY,
-    parallelApiKey: process.env.PARALLEL_API_KEY,
+    inferviqoApiKey: process.env.VIQO_API_KEY || process.env.VIQO_GATEWAY_API_KEY,
+    inferviqoBaseUrl: process.env.VIQO_API_BASE_URL,
   }),
 )
 
 export const configNode = makeLocationNode({ service: ConfigService, layer: defaultConfigLayer, deps: [] })
 
-export function selectProvider(
-  sessionID: string,
-  flags: Pick<Config, "enableExa" | "enableParallel"> = { enableExa: false, enableParallel: false },
-  override?: Provider,
-): Provider {
-  if (override) return override
-  if (flags.enableParallel) return "parallel"
-  if (flags.enableExa) return "exa"
-  return Number.parseInt(checksum(sessionID) ?? "0", 36) % 2 === 0 ? "exa" : "parallel"
+/** V2 websearch always uses the Inferviqo gateway. */
+export function selectProvider(_sessionID?: string): Provider {
+  return "inferviqo"
 }
 
-const McpResult = Schema.Struct({
-  result: Schema.Struct({
-    content: Schema.Array(Schema.Struct({ type: Schema.String, text: Schema.String })),
-  }),
-})
-const decodeMcpResult = Schema.decodeUnknownEffect(Schema.fromJsonString(McpResult))
-
-const parsePayload = (payload: string) =>
-  Effect.gen(function* () {
-    const trimmed = payload.trim()
-    if (!trimmed.startsWith("{")) return undefined
-    return (yield* decodeMcpResult(trimmed)).result.content.find((item) => item.text)?.text
-  })
-
-export const parseResponse = Effect.fn("WebSearchTool.parseResponse")(function* (body: string) {
-  const trimmed = body.trim()
-  const direct = trimmed ? yield* parsePayload(trimmed) : undefined
-  if (direct) return direct
-  for (const line of body.split("\n")) {
-    if (!line.startsWith("data: ")) continue
-    const data = yield* parsePayload(line.substring(6))
-    if (data) return data
-  }
-  return undefined
-})
-
-const ExaArgs = Schema.Struct({
-  query: Schema.String,
-  type: Schema.String,
-  numResults: Schema.Number,
-  livecrawl: Schema.String,
-  contextMaxCharacters: Schema.optional(Schema.Number),
-})
-const ParallelArgs = Schema.Struct({
-  objective: Schema.String,
-  search_queries: Schema.Array(Schema.String),
-  session_id: Schema.String,
-})
-const McpRequest = <F extends Schema.Struct.Fields>(args: Schema.Struct<F>) =>
-  Schema.Struct({
-    jsonrpc: Schema.Literal("2.0"),
-    id: Schema.Literal(1),
-    method: Schema.Literal("tools/call"),
-    params: Schema.Struct({ name: Schema.String, arguments: args }),
-  })
-
-const exaUrl = (apiKey: string | undefined) => {
-  if (!apiKey) return EXA_URL
-  const url = new URL(EXA_URL)
-  url.searchParams.set("exaApiKey", apiKey)
-  return url.toString()
+export function inferviqoWebSearchUrl(baseUrl?: string) {
+  const root = (baseUrl || "https://api.inferviqo.com").trim().replace(/\/+$/, "")
+  if (root.endsWith("/v1")) return `${root}/websearch`
+  return `${root}/v1/websearch`
 }
 
-const callMcp = <F extends Schema.Struct.Fields>(
+const InferviqoResponse = Schema.Struct({
+  text: Schema.optional(Schema.String),
+  query: Schema.optional(Schema.String),
+  results: Schema.optional(
+    Schema.Array(
+      Schema.Struct({
+        title: Schema.optional(Schema.String),
+        url: Schema.optional(Schema.String),
+        content: Schema.optional(Schema.String),
+        engine: Schema.optional(Schema.String),
+      }),
+    ),
+  ),
+})
+
+function formatResults(
+  query: string,
+  results: ReadonlyArray<{ title?: string; url?: string; content?: string; engine?: string }>,
+) {
+  if (results.length === 0) return `No search results found for "${query}".`
+  const blocks = results.map((item, index) => {
+    const lines = [`${index + 1}. ${(item.title || "").trim() || "(untitled)"}`]
+    if (item.url?.trim()) lines.push(`   URL: ${item.url.trim()}`)
+    if (item.engine?.trim()) lines.push(`   Engine: ${item.engine.trim()}`)
+    if (item.content?.trim()) lines.push(`   ${item.content.trim()}`)
+    return lines.join("\n")
+  })
+  return `Search results for "${query}":\n\n${blocks.join("\n\n")}`
+}
+
+const callInferviqo = (
   http: HttpClient.HttpClient,
-  url: string,
-  tool: string,
-  args: Schema.Struct<F>,
-  value: Schema.Struct.Type<F>,
-  headers: Record<string, string> = {},
+  config: Config,
+  input: typeof Input.Type,
 ) =>
   Effect.gen(function* () {
-    const request = yield* HttpClientRequest.post(url).pipe(
-      HttpClientRequest.accept("application/json, text/event-stream"),
-      HttpClientRequest.setHeaders(headers),
-      HttpClientRequest.schemaBodyJson(McpRequest(args))({
-        jsonrpc: "2.0" as const,
-        id: 1 as const,
-        method: "tools/call" as const,
-        params: { name: tool, arguments: value },
-      }),
-    )
-    return yield* Effect.gen(function* () {
-      const response = yield* HttpClient.filterStatusOk(http).execute(request)
-      const body = yield* collectBoundedResponseBody(
-        response,
-        MAX_RESPONSE_BYTES,
-        () => new Error(`${tool} response exceeded ${MAX_RESPONSE_BYTES} bytes`),
+    const apiKey = config.inferviqoApiKey?.trim()
+    if (!apiKey) {
+      return yield* Effect.fail(
+        new Error("Inferviqo websearch requires VIQO_API_KEY or VIQO_GATEWAY_API_KEY"),
       )
-      return yield* parseResponse(body.toString("utf8"))
-    }).pipe(
-      Effect.timeoutOrElse({
-        duration: Duration.seconds(25),
-        orElse: () => Effect.fail(new Error(`${tool} request timed out`)),
+    }
+
+    const request = yield* HttpClientRequest.post(inferviqoWebSearchUrl(config.inferviqoBaseUrl)).pipe(
+      HttpClientRequest.accept("application/json"),
+      HttpClientRequest.setHeaders({
+        Authorization: `Bearer ${apiKey}`,
+        "x-api-key": apiKey,
+        "User-Agent": `viqo/${InstallationVersion}`,
+      }),
+      HttpClientRequest.bodyJson({
+        query: input.query,
+        numResults: input.numResults || 8,
       }),
     )
+
+    const response = yield* HttpClient.filterStatusOk(http)
+      .execute(request)
+      .pipe(
+        Effect.timeoutOrElse({
+          duration: Duration.seconds(30),
+          orElse: () => Effect.fail(new Error("inferviqo websearch request timed out")),
+        }),
+      )
+
+    const body = yield* collectBoundedResponseBody(
+      response,
+      MAX_RESPONSE_BYTES,
+      () => new Error(`inferviqo websearch response exceeded ${MAX_RESPONSE_BYTES} bytes`),
+    )
+    const decoded = yield* Schema.decodeUnknownEffect(Schema.fromJsonString(InferviqoResponse))(body.toString("utf8"))
+    if (decoded.text?.trim()) return decoded.text
+    return formatResults(input.query, decoded.results ?? [])
   })
 
 const Output = Schema.Struct({
@@ -204,7 +173,7 @@ const layer = Layer.effectDiscard(
           output: Output,
           toModelOutput: ({ output }) => [{ type: "text", text: output.text }],
           execute: (input, context) => {
-            const provider = selectProvider(context.sessionID, config, config.provider)
+            const provider = selectProvider(context.sessionID)
             return Effect.gen(function* () {
               yield* permission.assert({
                 action: name,
@@ -216,31 +185,7 @@ const layer = Layer.effectDiscard(
                 source: { type: "tool", messageID: context.assistantMessageID, callID: context.toolCallID },
               })
 
-              const text =
-                provider === "exa"
-                  ? yield* callMcp(http, exaUrl(config.exaApiKey), "web_search_exa", ExaArgs, {
-                      query: input.query,
-                      type: input.type || "auto",
-                      numResults: input.numResults || 8,
-                      livecrawl: input.livecrawl || "fallback",
-                      contextMaxCharacters: input.contextMaxCharacters,
-                    })
-                  : yield* callMcp(
-                      http,
-                      PARALLEL_URL,
-                      "web_search",
-                      ParallelArgs,
-                      {
-                        objective: input.query,
-                        search_queries: [input.query],
-                        session_id: context.sessionID,
-                        // V2 invocation context does not safely expose the model yet.
-                      },
-                      {
-                        "User-Agent": `viqo/${InstallationVersion}`,
-                        ...(config.parallelApiKey ? { Authorization: `Bearer ${config.parallelApiKey}` } : {}),
-                      },
-                    )
+              const text = yield* callInferviqo(http, config, input)
               return {
                 provider,
                 text: text ?? NO_RESULTS,

@@ -24,6 +24,7 @@ import { Schema } from "effect"
 import z from "zod"
 import { Plugin } from "../plugin"
 import { Provider } from "@/provider/provider"
+import { Auth } from "@/auth"
 
 import { WebSearchTool } from "./websearch"
 import { LspTool } from "./lsp"
@@ -55,8 +56,16 @@ import { MCP } from "@/mcp"
 import { PermissionV1 } from "@viqo-ai/core/v1/permission"
 import { McpCatalog } from "@/mcp/catalog"
 
-export function webSearchEnabled(providerID: ProviderV2.ID, flags = { exa: false, parallel: false }) {
-  return providerID === ProviderV2.ID.viqo || flags.exa || flags.parallel
+export function webSearchEnabled(
+  providerID: ProviderV2.ID,
+  flags = { exa: false, parallel: false },
+) {
+  return (
+    providerID === ProviderV2.ID.viqo ||
+    flags.exa ||
+    flags.parallel ||
+    process.env.VIQO_WEBSEARCH_PROVIDER === "inferviqo"
+  )
 }
 
 type TaskDef = Tool.InferDef<typeof TaskTool>
@@ -423,6 +432,7 @@ export const node = LayerNode.make({
   service: Service,
   layer,
   deps: [
+    Auth.node,
     Config.node,
     Plugin.node,
     Question.node,
